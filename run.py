@@ -1,5 +1,5 @@
 import pytest
-# 导入 pytest，用于在脚本里直接启动测试
+# 导入 pytest，用于在脚本里直接启动测试运行
 
 
 if __name__ == "__main__":
