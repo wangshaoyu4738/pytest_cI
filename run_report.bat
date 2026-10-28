@@ -10,7 +10,9 @@ set "PROJECT_DIR=%~dp0"
 set "PYTHON=D:\Python\python313\python.exe"
 set "ALLURE=%PROJECT_DIR%tools\allure-2.32.0\bin\allure.bat"
 set "RAW_DIR=%PROJECT_DIR%reports\allure_raw"
-set "HTML_DIR=%PROJECT_DIR%reports\allure_html"
+REM 获取当前时间戳（格式 YYYYMMDD_HHMMSS），用于区分每次生成的报告
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss"') do set "TS=%%i"
+set "HTML_DIR=%PROJECT_DIR%reports\allure_html_%TS%"
 
 echo [1/3] 运行 pytest，生成 Allure 原始结果...
 "%PYTHON%" -m pytest %*

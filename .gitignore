@@ -3,7 +3,7 @@ tools/allure-2.32.0/
 
 # 测试生成的报告（原始结果 + 渲染后的网页），按需本地保留，不入库
 reports/allure_raw/
-reports/allure_html/
+reports/allure_html*/
 
 # Python 缓存
 __pycache__/

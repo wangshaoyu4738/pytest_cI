@@ -16,7 +16,8 @@ PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PYTHON="D:/Python/python313/python.exe"                       # 装了 pytest/allure-pytest 的解释器
 ALLURE="$PROJECT_DIR/tools/allure-2.32.0/bin/allure"          # 固定目录里的 Allure CLI
 RAW_DIR="$PROJECT_DIR/reports/allure_raw"                     # pytest 写出的原始结果
-HTML_DIR="$PROJECT_DIR/reports/allure_html"                   # 渲染后的网页报告
+TS="$(date +%Y%m%d_%H%M%S)"                                      # 当前时间戳，用于区分每次生成的报告
+HTML_DIR="$PROJECT_DIR/reports/allure_html_$TS"                 # 渲染后的网页报告（带时间戳，保留历史，不互相覆盖）
 
 echo "[1/3] 运行 pytest，生成 Allure 原始结果 -> $RAW_DIR"
 "$PYTHON" -m pytest "$@"
