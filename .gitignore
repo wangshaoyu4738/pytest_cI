@@ -1,0 +1,13 @@
+# Allure CLI 二进制（体积大，不入库；需要时用 tools/allure-2.32.0 或重新下载）
+tools/allure-2.32.0/
+
+# 测试生成的报告（原始结果 + 渲染后的网页），按需本地保留，不入库
+reports/allure_raw/
+reports/allure_html/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# pytest 缓存
+.pytest_cache/
