@@ -1,3 +1,5 @@
+import allure
+# 导入 allure，把统一的请求方法标记成测试步骤，报告里能看到每一次 HTTP 调用
 import requests
 # 导入 requests 库，用来真正发 HTTP 请求
 
@@ -38,6 +40,8 @@ class BasePage:
             # 告诉服务端使用中文语言
             "App-Name": self.env.get("app_name", "cldbus"),
             # 从环境配置取 App 名称，缺省用 cldbus
+            "App-Version": self.env.get("app_version", ""),
+            # 从环境配置取 App 版本；服务端据此做版本校验，留空则可能触发"请更新至最新版本"
             "Content-Type": "application/json",
             # 声明请求体是 JSON
         }
@@ -107,6 +111,9 @@ class BasePage:
         return f"{host}{prefix}{path}"
         # 返回完整请求地址，例如 https://xxx/api/v2/login
 
+    @allure.step("发送 {method} 请求 -> {url}")
+    # allure.step 把这个实例方法标记成一条“测试步骤”；调用它时会自动在报告里生成步骤记录，
+    # 标题里的 {method}/{url} 会被实际入参替换，方便在报告里看清每次请求的明细
     def request(self, method, url, json=None, params=None, headers=None, files=None, retry_on_expire=True):
         # 统一发请求；retry_on_expire 控制过期后是否重登再试一次
         self._sync_token_from_manager()

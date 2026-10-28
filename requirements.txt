@@ -1,4 +1,5 @@
 pytest==8.3.4
 pytest-html==4.1.1
+allure-pytest==2.13.5  # Allure 报告插件：让 pytest 在运行时写出 allure 可识别的原始结果，再用 allure CLI 生成可视化报告
 requests==2.32.3
 PyYAML==6.0.2

@@ -1,7 +1,10 @@
+import allure
+# 导入 allure，用来在 allure 报告里写入环境信息（见下方 pytest_configure）
 import pytest
 # 导入 pytest，用来声明 fixture 和钩子函数
 
 from config.path import DEVICE_DATA_FILE, REPORT_DIR
+from pages.baidu_page import BaiduPage
 # 导入设备数据文件路径和报告目录路径
 from pages.device_page import DevicePage
 # 导入设备 Page，后面做成 fixture 给用例用
@@ -9,6 +12,7 @@ from pages.login_page import LoginPage
 # 导入登录 Page
 from pages.share_page import SharePage
 # 导入分享 Page
+from pages.change_page import ChangePage
 from utils.token_manager import TokenManager
 from utils.yaml_util import get_env_config, load_yaml
 # 导入读取环境配置和 yaml 的工具函数
@@ -18,6 +22,25 @@ def pytest_configure(config):
     # pytest 启动时会调用这个钩子
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     # 确保 reports 目录存在，避免生成 html 报告时因目录不存在而失败
+    try:
+        # 下面把当前环境信息写进 allure 原始结果目录，报告“环境”页会展示出来
+        allure_results = REPORT_DIR / "allure_raw"
+        # allure 原始结果目录，必须和 pytest.ini 里 --alluredir 指向的路径一致
+        allure_results.mkdir(parents=True, exist_ok=True)
+        # 首次运行也确保目录存在，避免写入失败
+        env = get_env_config()
+        # 读取当前环境配置；只挑不敏感字段写进报告
+        props = (
+            f"current_env={env.get('name', '')}\n"
+            # 报告里展示当前跑的是哪套环境，例如“国内测试”
+            f"base_url={env.get('base_url', '')}\n"
+            # 展示被测服务地址，方便排查问题
+        )
+        (allure_results / "environment.properties").write_text(props, encoding="utf-8")
+        # 把环境信息写入 allure 结果目录
+    except Exception as exc:
+        # 环境信息只是报告加分项，写失败也不能影响正常测试流程
+        print(f"写入 allure 环境信息失败（不影响测试）: {exc}")
 
 
 @pytest.fixture(scope="session")
@@ -62,6 +85,12 @@ def device_page(env_config, token_manager):
     return DevicePage(env_config, token_manager=token_manager)
     # 创建 DevicePage，请求头里会带上 Bearer token，过期会自动重登
 
+@pytest.fixture(scope="session")
+# session 级设备 Page
+def change_page(env_config, token_manager):
+    # 依赖环境和共享 token 管理器，构造带鉴权的设备 Page
+    return ChangePage(env_config, token_manager=token_manager)
+    # 创建 DevicePage，请求头里会带上 Bearer token，过期会自动重登
 
 @pytest.fixture(scope="session")
 # session 级分享 Page
@@ -70,6 +99,12 @@ def share_page(env_config, token_manager):
     return SharePage(env_config, token_manager=token_manager)
     # 创建 SharePage，和设备 Page 共用同一份可刷新 token
 
+@pytest.fixture(scope="session")
+# session 级分享 Page
+def baidu_page():
+    # 依赖环境和共享 token 管理器，构造带鉴权的分享 Page
+    return BaiduPage()
+    # 百度验证框架可以用
 
 @pytest.fixture(scope="session")
 # session 级设备测试数据
